@@ -5,14 +5,7 @@ import io
 from flask_cors import CORS
 
 app = Flask(__name__)
-# Explicitly allow localhost:5173 and all methods/headers
-CORS(app, resources={
-    r"/remove-bg": {
-        "origins": ["http://localhost:5173", "https://your-frontend-domain.vercel.app"],  # Add production frontend URL later
-        "methods": ["POST", "OPTIONS"],  # Include OPTIONS for preflight
-        "allow_headers": ["Content-Type", "Authorization"]
-    }
-})
+CORS(app)
 
 @app.route('/remove-bg', methods=['POST'])
 def remove_background():
@@ -34,7 +27,6 @@ def remove_background():
         download_name='output.png'
     )
 
-# Handle CORS preflight requests explicitly
-@app.route('/remove-bg', methods=['OPTIONS'])
-def handle_options():
-    return {}, 200
+# Remove or comment out for Vercel
+# if __name__ == '__main__':
+#     app.run(debug=True, port=5000)
