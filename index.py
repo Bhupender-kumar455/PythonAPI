@@ -1,23 +1,24 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, make_response
 from rembg import remove
 from PIL import Image
 import io
-from flask_cors import CORS
 
 app = Flask(__name__)
-# Explicitly allow localhost:5173 and all methods/headers
-CORS(app, resources={
-    r"/remove-bg": {
-        "origins": ["http://localhost:5173", "https://your-frontend-domain.vercel.app"],  # Add production frontend URL later
-        "methods": ["POST", "OPTIONS"],  # Include OPTIONS for preflight
-        "allow_headers": ["Content-Type", "Authorization"]
-    }
-})
+
+# Manually handle CORS for all responses
+@app.after_request
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'  # Update for production later
+    response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    response.headers['Access-Control-Max-Age'] = '86400'  # Cache preflight for 24 hours
+    return response
 
 @app.route('/remove-bg', methods=['POST'])
 def remove_background():
     if 'image' not in request.files:
-        return {'error': 'No image provided'}, 400
+        response = make_response({'error': 'No image provided'}, 400)
+        return response
 
     file = request.files['image']
     input_image = Image.open(file.stream)
@@ -34,7 +35,7 @@ def remove_background():
         download_name='output.png'
     )
 
-# Handle CORS preflight requests explicitly
 @app.route('/remove-bg', methods=['OPTIONS'])
 def handle_options():
-    return {}, 200
+    response = make_response({}, 200)
+    return response
