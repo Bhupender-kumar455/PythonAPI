@@ -27,5 +27,6 @@ def remove_background():
         download_name='output.png'
     )
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# Remove or comment out for Vercel
+# if __name__ == '__main__':
+#     app.run(debug=True, port=5000)
