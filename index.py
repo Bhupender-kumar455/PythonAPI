@@ -5,7 +5,13 @@ import io
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={
+    r"/remove-bg": {
+        "origins": ["http://localhost:5173", "https://your-frontend-domain.vercel.app"],  # Add production frontend URL later
+        "methods": ["POST", "OPTIONS"],  # Include OPTIONS for preflight
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 @app.route('/remove-bg', methods=['POST'])
 def remove_background():
